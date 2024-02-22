@@ -8,8 +8,12 @@ async function main() {
   // global pipe
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist:true,
-      forbidNonWhitelisted:true
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,// transformacion en true
+      transformOptions: {
+        enableImplicitConversion: true//config para la transformacion implicita de la data
+      }
     })
   )
   //global prefix:

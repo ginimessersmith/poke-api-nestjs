@@ -5,6 +5,8 @@ import { Model, isValidObjectId } from 'mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { promiseHooks } from 'v8';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+
 
 @Injectable()
 export class PokemonService {
@@ -35,13 +37,21 @@ export class PokemonService {
 
     } catch (error) {
       this.handleException(error)
+      throw error
     }
 
   }
 
-  async findAll() {
-    const pokemones = await this.pokemonModel.find().lean()
-    return pokemones
+  async findAll(queryParameters: PaginationDto) {
+    const { limit = 10, offset = 0 } = queryParameters
+    return await this.pokemonModel.find()
+      .lean()
+      .limit(limit)// de 5 en 5
+      .skip(offset)// traer desde el numero 5
+      .sort({
+        no: 1// ordenar no de manera ascendente
+      })
+      .select('-__v')//quitar el __v
   }
 
   async findOne(termSearch: string) {
@@ -79,10 +89,10 @@ export class PokemonService {
   async remove(id: string) {
     //? solucion 1:
     const result = await this.pokemonModel.findByIdAndDelete(id)
-    if(!result) throw new BadRequestException(`no existe pokemon con el id: ${id}`)
+    if (!result) throw new BadRequestException(`no existe pokemon con el id: ${id}`)
     //? solucion 2:
     // const {deletedCount} = await this.pokemonModel.deleteOne({_id:id})
     // if(deletedCount ==0) throw new BadRequestException(`no existe pokemon con el id: ${id}`)
-    return {message:`eliminado con exito`}
+    return { message: `eliminado con exito` }
   }
 }
