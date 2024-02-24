@@ -18,6 +18,7 @@ async function main() {
   )
   //global prefix:
   app.setGlobalPrefix('api')
-  await app.listen(3000);
+  await app.listen(process.env.PORT);
+  console.log(`App runnign on port ${process.env.PORT}`)
 }
 main();

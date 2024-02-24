@@ -6,16 +6,25 @@ import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { promiseHooks } from 'v8';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { ConfigService } from '@nestjs/config';
+
 
 
 @Injectable()
 export class PokemonService {
-
+  //? atributo desde env
+  private defaultLimit: number
   // inyeccion de dependencias (Model de mongoose y pokemon de la entity):
   constructor(
     @InjectModel(Pokemon.name)
-    private readonly pokemonModel: Model<Pokemon>
-  ) { }
+    private readonly pokemonModel: Model<Pokemon>,
+    private readonly configService: ConfigService
+  ) {
+    //console.log(process.env.DEFAULT_LIMIT)
+    // console.log(configService.get('defaultLimit'))
+    this.defaultLimit = configService.get<number>('defaultLimit')
+    // console.log(defaultLimit)
+  }
   //*  --- METODO PARA MANEJAR LOS ERRORES
   private handleException(error: any) {
     if (error.code === 11000) {
@@ -43,7 +52,7 @@ export class PokemonService {
   }
 
   async findAll(queryParameters: PaginationDto) {
-    const { limit = 10, offset = 0 } = queryParameters
+    const { limit = this.defaultLimit, offset = 0 } = queryParameters
     return await this.pokemonModel.find()
       .lean()
       .limit(limit)// de 5 en 5

@@ -23,6 +23,10 @@ docker-compose up -d
 ```
 GET http://localhost:3000/api/v2/seed
 ```
+5. Clonar el ```.env.example``` y renombrar a ```.env```
+
+6. Rellenar las varibles de entorno definidas en el ``` .env.example```
+
 ## Stack usado
 
 * MongoDB
